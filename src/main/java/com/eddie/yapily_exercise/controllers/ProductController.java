@@ -1,7 +1,7 @@
-package com.eddie.yapily_exercise.Controllers;
+package com.eddie.yapily_exercise.controllers;
 
 
-import com.eddie.yapily_exercise.models.dtos.ProductDto;
+import com.eddie.yapily_exercise.dtos.ProductDto;
 import com.eddie.yapily_exercise.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

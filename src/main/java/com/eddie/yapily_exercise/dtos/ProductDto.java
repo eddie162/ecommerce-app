@@ -1,12 +1,10 @@
-package com.eddie.yapily_exercise.models.dtos;
+package com.eddie.yapily_exercise.dtos;
 
-import com.eddie.yapily_exercise.models.Label;
 import com.eddie.yapily_exercise.models.Product;
 import lombok.Value;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 /**
  * DTO for {@link Product}
@@ -17,5 +15,5 @@ public class ProductDto implements Serializable {
     String name;
     Double price;
     String added_at;
-    List<String> labels;
+    Set<String> labels;
 }

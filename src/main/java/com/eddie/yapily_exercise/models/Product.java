@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 
 @Getter
@@ -27,6 +27,6 @@ public class Product {
     @JoinTable(name = "product_label",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "label_id"))
-    private List<Label> labels;
+    private Set<Label> labels;
 
 }

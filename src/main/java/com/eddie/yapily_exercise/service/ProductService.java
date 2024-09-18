@@ -2,12 +2,11 @@ package com.eddie.yapily_exercise.service;
 
 import com.eddie.yapily_exercise.models.Label;
 import com.eddie.yapily_exercise.models.Product;
-import com.eddie.yapily_exercise.models.dtos.ProductDto;
+import com.eddie.yapily_exercise.dtos.ProductDto;
 import com.eddie.yapily_exercise.repositories.LabelRepository;
 import com.eddie.yapily_exercise.repositories.ProductRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.eddie.yapily_exercise.service.mappers.DtoEntityMapper;
+import com.eddie.yapily_exercise.service.mappers.ProductMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,10 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    public static final DateTimeFormatter PRODUCT_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     private final ProductRepository productRepository;
     private final LabelRepository labelRepository;
+    private final DtoEntityMapper<ProductDto,Product> productMapper = new ProductMapper();
 
     public ProductService(ProductRepository productRepository, LabelRepository labelRepository) {
         this.productRepository = productRepository;
@@ -33,13 +33,13 @@ public class ProductService {
 
     public List<ProductDto> getAllProducts() {
         return productRepository.findAll().stream()
-                .map(this::entityToDto)
+                .map(productMapper::entityToDto)
                 .toList();
     }
 
     public ProductDto getById(Long id) {
         return productRepository.findById(id)
-                .map(this::entityToDto)
+                .map(productMapper::entityToDto)
                 .orElse(null);
     }
 
@@ -61,31 +61,14 @@ public class ProductService {
             throw new RuntimeException("Label not found");
         }
 
-        Product entity = dtoToEntity(productDto);
+        Product entity = productMapper.dtoToEntity(productDto);
+        Set<Label> labels = labelRepository.findAllByLabelNameIn(productDto.getLabels());
+        entity.setLabels(labels);
+
         entity.setAddedAt(LocalDate.now());
         productRepository.save(entity);
-        return entityToDto(entity);
+        return productMapper.entityToDto(entity);
     }
-
-
-    public ProductDto entityToDto(Product product){
-        List<String> labelList = product.getLabels().stream()
-                .map(Label::getLabelName)
-                .toList();
-
-        return new ProductDto(product.getId(), product.getName(), product.getPrice(), product.getAddedAt().format(DATE_FORMAT), labelList);
-    }
-
-    public Product dtoToEntity(ProductDto productDto){
-        List<Label> labels = labelRepository.findAllByLabelNameIn(productDto.getLabels());
-        Product productEntity = new Product();
-        productEntity.setName(productDto.getName());
-        productEntity.setPrice(productDto.getPrice());
-        productEntity.setLabels(labels);
-
-        return productEntity;
-    }
-
 
     public boolean deleteProduct(Long id) {
         try {

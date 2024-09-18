@@ -1,13 +1,10 @@
-### GET request to example server
+### GET list all products
 GET http://localhost:8080/products/
 
-###
+### GET product id 1
+GET http://localhost:8080/products/1
 
-
-GET http://localhost:8080/products/3
-
-###
-
+### POST create new Product
 POST http://localhost:8080/products/
 Content-Type: application/json
 
@@ -17,10 +14,44 @@ Content-Type: application/json
  "labels": ["food", "limited"]
 }
 
-###
-GET http://localhost:8080/ProductRepository
-
-###
+### DELETE remove product
 DELETE http://localhost:8080/products/2
 
-###
+### POST create new Cart (example 1)
+POST http://localhost:8080/carts/
+Content-Type: application/json
+
+{
+  "products": [],
+  "checked_out": false
+}
+
+### POST create new Cart (Example 2)
+POST http://localhost:8080/carts/
+Content-Type: application/json
+
+{
+  "products": [
+    {
+      "product_id": 1,
+      "quantity": 2
+    }
+  ],
+  "checked_out": false
+}
+
+### GET List all Carts
+GET http://localhost:8080/carts/
+
+### PUT modify existing Carts
+PUT http://localhost:8080/carts/1
+Content-Type: application/json
+
+[{
+  "product_id": 1,
+  "quantity": 200
+}]
+
+
+### POST checkout Cart
+POST http://localhost:8080/carts/1/checkout
