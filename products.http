@@ -1,0 +1,26 @@
+### GET request to example server
+GET http://localhost:8080/products/
+
+###
+
+
+GET http://localhost:8080/products/3
+
+###
+
+POST http://localhost:8080/products/
+Content-Type: application/json
+
+{
+ "name": "Special Smelly Cheese12",
+ "price": 20.99,
+ "labels": ["food", "limited"]
+}
+
+###
+GET http://localhost:8080/ProductRepository
+
+###
+DELETE http://localhost:8080/products/2
+
+###
