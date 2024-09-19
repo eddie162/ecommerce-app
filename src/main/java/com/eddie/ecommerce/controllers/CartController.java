@@ -26,13 +26,13 @@ public class CartController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<CartDto>> getAllCarts() {
-        return new ResponseEntity<>(cartService.listAllCarts(), HttpStatus.OK);
+    public List<CartDto> getAllCarts() {
+        return cartService.listAllCarts();
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Object> modifyCart(@PathVariable Long id, @RequestBody List<CartItemDto> cartItems) {
-        return new ResponseEntity<>(cartService.modifyCart(id, cartItems), HttpStatus.OK);
+    public CartDto modifyCart(@PathVariable Long id, @RequestBody List<CartItemDto> cartItems) {
+        return cartService.modifyCart(id, cartItems);
     }
 
     @PostMapping(value= "/{id}/checkout")

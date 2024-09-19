@@ -8,12 +8,15 @@ import com.eddie.ecommerce.repositories.LabelRepository;
 import com.eddie.ecommerce.repositories.ProductRepository;
 import com.eddie.ecommerce.service.mappers.DtoEntityMapper;
 import com.eddie.ecommerce.service.mappers.ProductMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,11 +27,14 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final LabelRepository labelRepository;
-    private final DtoEntityMapper<ProductDto,Product> productMapper = new ProductMapper();
+    private final DtoEntityMapper<ProductDto,Product> productMapper;
+    private final Clock clock;
 
-    public ProductService(ProductRepository productRepository, LabelRepository labelRepository) {
+    public ProductService(ProductRepository productRepository, LabelRepository labelRepository, DtoEntityMapper<ProductDto, Product> productMapper, Clock clock) {
         this.productRepository = productRepository;
         this.labelRepository = labelRepository;
+        this.productMapper = productMapper;
+        this.clock = clock;
     }
 
 
@@ -39,9 +45,12 @@ public class ProductService {
     }
 
     public ProductDto getById(Long id) {
-        return productRepository.findById(id)
-                .map(productMapper::entityToDto)
-                .orElse(null);
+        Optional<Product> optProduct = productRepository.findById(id);
+        if (optProduct.isEmpty()){
+            throw new GenericAPIException("Product Id does not exist");
+        }
+        return productMapper.entityToDto(optProduct.get());
+
     }
 
     public ProductDto addProduct(ProductDto productDto) {
@@ -66,19 +75,12 @@ public class ProductService {
         Set<Label> labels = labelRepository.findAllByLabelNameIn(productDto.getLabels());
 
         entity.setLabels(labels);
-        entity.setAddedAt(LocalDate.now());
+        entity.setAddedAt(LocalDate.now(this.clock));
         productRepository.save(entity);
         return productMapper.entityToDto(entity);
     }
 
-    public boolean deleteProduct(Long id) {
-        try {
-            // this will work for non-existing ids.
-            productRepository.deleteById(id);
-            return true;
-        }
-        catch (Exception e) {
-            return false;
-        }
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 }

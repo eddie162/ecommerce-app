@@ -11,11 +11,17 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Catch all expected/handled errors
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(GenericAPIException.class)
     public ResponseEntity<Object> handleGenericAPIException(GenericAPIException ex) {
         return new ResponseEntity<>(generateErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    // Unhandled exception Error handling
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleOtherExceptions(Exception ex) {
         return new ResponseEntity<>(generateErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
