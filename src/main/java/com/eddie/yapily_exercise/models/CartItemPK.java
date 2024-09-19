@@ -4,12 +4,14 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @Embeddable
+@NoArgsConstructor
+@AllArgsConstructor
 public class CartItemPK {
 
     @ManyToOne(fetch = FetchType.LAZY)

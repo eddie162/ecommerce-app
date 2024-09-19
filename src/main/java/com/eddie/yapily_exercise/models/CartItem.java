@@ -1,12 +1,14 @@
 package com.eddie.yapily_exercise.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CartItem {
 
     @EmbeddedId
@@ -15,13 +17,10 @@ public class CartItem {
     private Integer quantity;
 
     public CartItem(Cart cart, Product product, Integer quantity) {
-        id = new CartItemPK();
-        id.setCart(cart);
-        id.setProduct(product);
+        this.id = CartItemPK.builder()
+                .cart(cart)
+                .product(product)
+                .build();
         this.quantity = quantity;
-    }
-
-    public CartItem() {
-
     }
 }

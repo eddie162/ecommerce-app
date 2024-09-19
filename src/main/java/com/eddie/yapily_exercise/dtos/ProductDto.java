@@ -1,6 +1,7 @@
 package com.eddie.yapily_exercise.dtos;
 
 import com.eddie.yapily_exercise.models.Product;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -11,9 +12,15 @@ import java.util.Set;
  */
 @Value
 public class ProductDto implements Serializable {
-    Long product_id;
+    @JsonProperty("product_id")
+    Long id;
+
     String name;
+
     Double price;
-    String added_at;
+
+    @JsonProperty("added_at")
+    String addedAt;
+
     Set<String> labels;
 }

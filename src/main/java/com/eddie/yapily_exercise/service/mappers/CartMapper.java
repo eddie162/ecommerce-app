@@ -15,46 +15,27 @@ import java.util.stream.Collectors;
 
 public class CartMapper implements DtoEntityMapper<CartDto, Cart> {
 
-    private final DtoEntityMapper<ProductDto, Product> productMapper;
-    private final ProductRepository productRepository;
-
-    public CartMapper(DtoEntityMapper<ProductDto, Product> productMapper, ProductRepository productRepository) {
-        this.productMapper = productMapper;
-        this.productRepository = productRepository;
-    }
+    public CartMapper() {}
 
     public CartDto entityToDto(Cart cart){
         Set<CartItemDto> cartItems = cart.getProducts().stream()
-                .map(cartItem -> {
-                    CartItemDto cartItemDto = new CartItemDto(cartItem.getId().getProduct().getId(), cartItem.getQuantity());
-                    return cartItemDto;
-                })
+                .map(cartItem -> new CartItemDto(cartItem.getId().getProduct().getId(), cartItem.getQuantity()))
                 .collect(Collectors.toSet());
 
         return new CartDto(cart.getId(),cartItems, cart.isCheckedOut());
     }
 
     public Cart dtoToEntity(CartDto cartDto){
-        Set<CartItem> cartItemDtos = cartDto.getProducts().stream()
-                .map(cartItemDto -> {
-                    Product product = productRepository.findById(cartItemDto.getProduct_id()).orElse(null);
-                    Cart cart = null;
-                    CartItemPK pk = new CartItemPK();
-                    pk.setCart(cart);
-                    pk.setProduct(product);
-
-                    CartItem cartItem = new CartItem();
-                    cartItem.setId(pk);
-                    cartItem.setQuantity(cartItemDto.getQuantity());
-                    return cartItem;
-                        })
+        Set<CartItem> cartItemDtos = cartDto.getCartItems().stream()
+                .map(cartItemDto -> CartItem.builder()
+                        .quantity(cartItemDto.getQuantity())
+                        .build())
                 .collect(Collectors.toSet());
 
-        Cart cart = new Cart();
-        cart.setId(cartDto.getCart_id());
-        cart.setProducts(cartItemDtos);
-        cart.setCheckedOut(cartDto.getChecked_out());
-
-        return cart;
+        return Cart.builder()
+                .id(cartDto.getId())
+                .products(cartItemDtos)
+                .checkedOut(cartDto.isCheckedOut())
+                .build();
     }
 }

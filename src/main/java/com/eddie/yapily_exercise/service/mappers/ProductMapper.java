@@ -19,10 +19,9 @@ public class ProductMapper implements DtoEntityMapper<ProductDto, Product> {
     }
 
     public Product dtoToEntity(ProductDto productDto){
-        Product productEntity = new Product();
-        productEntity.setName(productDto.getName());
-        productEntity.setPrice(productDto.getPrice());
-        return productEntity;
+        return Product.builder()
+                .name(productDto.getName())
+                .price(productDto.getPrice())
+                .build();
     }
-
 }

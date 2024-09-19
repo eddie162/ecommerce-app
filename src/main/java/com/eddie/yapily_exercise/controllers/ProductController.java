@@ -2,17 +2,20 @@ package com.eddie.yapily_exercise.controllers;
 
 
 import com.eddie.yapily_exercise.dtos.ProductDto;
+import com.eddie.yapily_exercise.exceptions.GenericAPIException;
 import com.eddie.yapily_exercise.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-@Controller
+import static com.eddie.yapily_exercise.exceptions.GlobalExceptionHandler.generateErrorResponse;
+
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -30,22 +33,17 @@ public class ProductController {
     }
 
     @GetMapping(value="/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id){
-        return new ResponseEntity<>(productService.getById(id),HttpStatus.OK);
+    public ResponseEntity<Object> getProductById(@PathVariable Long id){
+        ProductDto productDto = productService.getById(id);
+        if (Objects.isNull(productDto)) {
+            return new ResponseEntity<>(generateErrorResponse("Product Id does not exist"), HttpStatus.BAD_REQUEST);        }
+        return ResponseEntity.ok(productService.getById(id));
     }
 
     @PostMapping(value="/")
     public ResponseEntity<Object> addProduct(@RequestBody ProductDto productDto) {
-
-        try {
-            ProductDto updatedProductDto = productService.addProduct(productDto);
-            return new ResponseEntity<>(updatedProductDto, HttpStatus.CREATED);
-        } catch (Exception e) {
-            // Prepare error response
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        }
+        ProductDto updatedProductDto = productService.addProduct(productDto);
+        return new ResponseEntity<>(updatedProductDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -53,11 +51,7 @@ public class ProductController {
         if (productService.deleteProduct(id)){
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
-
-        // Prepare error response
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "delete for product was unsuccessful");
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(generateErrorResponse("delete for product was unsuccessful"), HttpStatus.BAD_REQUEST);
 
     }
 

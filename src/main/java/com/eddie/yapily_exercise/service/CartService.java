@@ -1,5 +1,6 @@
 package com.eddie.yapily_exercise.service;
 
+import com.eddie.yapily_exercise.exceptions.GenericAPIException;
 import com.eddie.yapily_exercise.models.Cart;
 import com.eddie.yapily_exercise.models.CartItem;
 import com.eddie.yapily_exercise.dtos.CartCheckoutDto;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -40,8 +42,8 @@ public class CartService{
         cart = cartRepository.save(cart);
 
         Set<CartItem> cartItems = new HashSet<>();
-        for (CartItemDto cartItemDto :  inputDto.getProducts()) {
-            CartItem cartItem = new CartItem(cart, productRepository.findById(cartItemDto.getProduct_id()).orElse(null), cartItemDto.getQuantity());
+        for (CartItemDto cartItemDto :  inputDto.getCartItems()) {
+            CartItem cartItem = new CartItem(cart, productRepository.findById(cartItemDto.getId()).orElse(null), cartItemDto.getQuantity());
             cartItem = cartItemRepository.save(cartItem);
             cartItems.add(cartItem);
         }
@@ -63,13 +65,17 @@ public class CartService{
     public CartDto modifyCart(Long cartId, List<CartItemDto> inputCartItems) {
         Cart cart = cartRepository.findById(cartId).orElse(null);
 
+        if (Objects.isNull(cart)) {
+            throw new GenericAPIException("Provided CartId does not exist");
+        }
+
         if (cart.isCheckedOut()) {
-            throw new RuntimeException("Cart is already checked out and cannot be modified");
+            throw new GenericAPIException("Cart is already checked out and cannot be modified");
         }
 
         Set<CartItem> cartItems = new HashSet<>();
         for (CartItemDto cartItemDto :  inputCartItems) {
-            CartItem cartItem = new CartItem(cart, productRepository.findById(cartItemDto.getProduct_id()).orElse(null), cartItemDto.getQuantity());
+            CartItem cartItem = new CartItem(cart, productRepository.findById(cartItemDto.getId()).orElse(null), cartItemDto.getQuantity());
             cartItem = cartItemRepository.save(cartItem);
             cartItems.add(cartItem);
         }

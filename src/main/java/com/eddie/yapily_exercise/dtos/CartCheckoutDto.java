@@ -1,11 +1,16 @@
 package com.eddie.yapily_exercise.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 import java.io.Serializable;
 
 @Value
 public class CartCheckoutDto implements Serializable {
+
+    @JsonProperty("cart")
     CartDto cart;
-    Double total_cost;
+
+    @JsonProperty("total_cost")
+    Double totalCost;
 }

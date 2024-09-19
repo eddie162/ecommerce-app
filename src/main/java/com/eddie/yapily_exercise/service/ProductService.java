@@ -1,5 +1,6 @@
 package com.eddie.yapily_exercise.service;
 
+import com.eddie.yapily_exercise.exceptions.GenericAPIException;
 import com.eddie.yapily_exercise.models.Label;
 import com.eddie.yapily_exercise.models.Product;
 import com.eddie.yapily_exercise.dtos.ProductDto;
@@ -46,11 +47,11 @@ public class ProductService {
     public ProductDto addProduct(ProductDto productDto) {
         String productName = productDto.getName();
         if (productName.length() > 200){
-            throw new RuntimeException("productName cannot exceed 200 characters");
+            throw new GenericAPIException("productName cannot exceed 200 characters");
         }
 
         if (Objects.nonNull(productRepository.findByName(productName))){
-            throw new RuntimeException("productName already exist");
+            throw new GenericAPIException("productName already exist");
         }
 
         Set<String> validLabelNames = labelRepository.findAll().stream()
@@ -58,13 +59,13 @@ public class ProductService {
                 .collect(Collectors.toSet());
 
         if (!validLabelNames.containsAll(productDto.getLabels())) {
-            throw new RuntimeException("Label not found");
+            throw new GenericAPIException("Label not found");
         }
 
         Product entity = productMapper.dtoToEntity(productDto);
         Set<Label> labels = labelRepository.findAllByLabelNameIn(productDto.getLabels());
-        entity.setLabels(labels);
 
+        entity.setLabels(labels);
         entity.setAddedAt(LocalDate.now());
         productRepository.save(entity);
         return productMapper.entityToDto(entity);

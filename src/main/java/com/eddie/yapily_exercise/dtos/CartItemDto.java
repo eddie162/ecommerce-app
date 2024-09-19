@@ -1,6 +1,7 @@
 package com.eddie.yapily_exercise.dtos;
 
 import com.eddie.yapily_exercise.models.CartItem;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -10,6 +11,9 @@ import java.io.Serializable;
  */
 @Value
 public class CartItemDto implements Serializable {
-    Long product_id;
+
+    @JsonProperty("product_id")
+    Long id;
+
     int quantity;
 }

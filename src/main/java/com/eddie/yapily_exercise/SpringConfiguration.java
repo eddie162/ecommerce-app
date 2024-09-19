@@ -13,13 +13,10 @@ public class SpringConfiguration {
     @Bean
     protected ProductMapper productMapper() {
         return new ProductMapper();
-
     }
 
     @Bean
-    protected CartMapper cartMapper(
-            @Autowired ProductMapper productMapper,
-            @Autowired ProductRepository productRepository) {
-        return new CartMapper(productMapper, productRepository);
+    protected CartMapper cartMapper() {
+        return new CartMapper();
     }
 }
